@@ -25,14 +25,18 @@ type modify = [
     details : informations
 ]
 
+export type storage =[
+    annuaire : annuaire
+]
+
 export type parameter =
   | ["Append" , append]
   | ["Remove" , address]
   | ["Modify" , modify]
 ;
 
-const append = ([param,storage]:[append,storage]) : bool =>{
-    
+const append = ([param,storage]:[append,storage]) : annuaire =>{
+    Big_map.add((param.user as address),param.details,storage.annuaire)
 }
 
 const main = ([entrypoint, storage] : [parameter, storage]) : result => {
