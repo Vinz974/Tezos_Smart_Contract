@@ -1,0 +1,44 @@
+type informations = [
+    [@layout:comb]
+    telephone : string,
+    name : string,
+    firstname : string,
+    age : nat
+]
+
+type annuaire = big_map< address, informations >;
+
+type append = [
+    [@layout:comb]
+    user: address,
+    details : informations
+]
+
+//type remove = [
+//    [@layout:comb]
+//    user : address 
+//]
+
+type modify = [
+    [@layout:comb]
+    user : address,
+    details : informations
+]
+
+export type parameter =
+  | ["Append" , append]
+  | ["Remove" , address]
+  | ["Modify" , modify]
+;
+
+const append = ([param,storage]:[append,storage]) : bool =>{
+    
+}
+
+const main = ([entrypoint, storage] : [parameter, storage]) : result => {
+    return match (entrypoint, {
+        Append:   (param: append)   => append(param, storage),
+        Remove:    (param: address)    => remove(param, storage),
+        Modify: (param: modify) => modify(param, storage)
+    });
+};
