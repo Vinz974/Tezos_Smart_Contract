@@ -1,48 +1,69 @@
-type informations = [
+type informations = 
     [@layout:comb]
-    telephone : string,
-    name : string,
-    firstname : string,
-    age : nat
-]
+    {   telephone : string,
+        name : string,
+        firstname : string,
+        age : nat
+    };
 
-type annuaire = big_map< address, informations >;
+export type annuaire = big_map<address, informations>;
 
-type append = [
+type append = 
     [@layout:comb]
-    user: address,
-    details : informations
-]
+    {
+        user: address,
+        details : informations
+    };
 
-//type remove = [
-//    [@layout:comb]
-//    user : address 
-//]
-
-type modify = [
+type remove = 
     [@layout:comb]
-    user : address,
-    details : informations
-]
+    {
+        user: address,
+    };
 
-export type storage =[
-    annuaire : annuaire
-]
+
+type modify = 
+    [@layout:comb]
+    {
+        user : address,
+        details : informations
+    };
+
+
+export type storage =
+    [@layout:comb]
+    {
+        annuaire : annuaire,
+        id : nat
+    };
+
 
 export type parameter =
   | ["Append" , append]
-  | ["Remove" , address]
+  | ["Remove" , remove]
   | ["Modify" , modify]
 ;
 
-const append = ([param,storage]:[append,storage]) : annuaire =>{
-    Big_map.add((param.user as address),param.details,storage.annuaire)
-}
+type result = [list<operation>, storage];
+
+const append = ([param,storage] : [append,storage]) : result => {
+    let annuaire: annuaire = storage.annuaire;
+    let updated_annuaire = Big_map.add(param.user ,param.details, annuaire )
+    return [list([]) as list<operation>, {...storage, annuaire : updated_annuaire}]
+};
+
+const remove = ([_param,storage] : [remove,storage]) : result => {
+    return [list([]) as list<operation>, storage]
+};
+
+const modify = ([_param,storage] : [modify,storage]) : result => {
+    return [list([]) as list<operation>, storage]
+};
 
 const main = ([entrypoint, storage] : [parameter, storage]) : result => {
     return match (entrypoint, {
-        Append:   (param: append)   => append(param, storage),
-        Remove:    (param: address)    => remove(param, storage),
-        Modify: (param: modify) => modify(param, storage)
+        Append:   (param: append)  => append(param, storage),
+        Remove:   (param: remove)  => remove(param, storage),
+        Modify:   (param: modify)  => modify(param, storage)
     });
 };
